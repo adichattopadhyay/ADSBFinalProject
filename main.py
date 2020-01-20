@@ -105,6 +105,14 @@ weights = [leftWeight, leftCentWeight, neutralWeight, rightCentWeight, rightWeig
 #Dictionary with the biases for easy accessing
 biasDict = {0:"Left Bias", 1:"Left Center Bias", 2:"Neutral Bias", 3:"Right Center Bias", 4:"Right Bias"}
 
+firstCounts = []
+maxFirstCount = 0
+for i in range(5):
+    with open("cleanedData/"+str(i)+"cleaned.txt", 'r') as data:
+        lines = data.read().split("\n")
+        firstCounts.append(int(lines[0].split(": ")[1]))
+maxFirstCount = max(firstCounts)
+
 for i in range(5):
     with open("cleanedData/"+str(i)+"cleaned.txt", 'r') as data:
         lines = data.read().split("\n")
@@ -114,7 +122,7 @@ for i in range(5):
         for word in articleDictSorted:
             for k,line in enumerate(lines): 
                 if word[0] in line:
-                    weights[i]+=(weight[k-1]*int(line.split(": ")[1]))#Looks through the article and looks through each bias document, if it finds it add it to the weight
+                    weights[i]+=(weight[k-1]*int(line.split(": ")[1])/maxFirstCount)#Looks through the article and looks through each bias document, if it finds it add it to the weight
         weights[i] = weights[i]/dataLen
 print(weights)
 print("Left Bias                 Right Bias")

@@ -93,21 +93,25 @@ for rowNumber in range(100):
 
     #Dictionary with the biases for easy accessing
     biasDict = {0:"Left Bias", 1:"Left Center Bias", 2:"Neutral Bias", 3:"Right Center Bias", 4:"Right Bias"}
-
+    
+    firstCounts = []
+    maxFirstCount = 0
+    for i in range(5):
+        with open("cleanedData/"+str(i)+"cleaned.txt", 'r') as data:
+            lines = data.read().split("\n")
+            firstCounts.append(int(lines[0].split(": ")[1]))
+    maxFirstCount = max(firstCounts)
+    print("firstCounts: " + str(firstCounts))
+    print("Max First Count: " + str(maxFirstCount))
     for i in range(5):
         with open("cleanedData/"+str(i)+"cleaned.txt", 'r') as data:
             lines = data.read().split("\n")
             dataLen = len(lines)
             weight = [j/dataLen for j in range(dataLen, 0, -1)] #Creates and array that has a weight for all of the words in whichever bias text file
-            first = True
-            firstCount = 0
             for word in articleDictSorted:
                 for k,line in enumerate(lines):
                     if word[0] in line and line != "":
-                        if(first):
-                            firstCount = int(line.split(": ")[1])
-                            first = False
-                        weights[i]+=(weight[k-1]*int(line.split(": ")[1]))#/firstCount)#Looks through the article and looks through each bias document, if it finds it add it to the weight                                                    
+                        weights[i]+=(weight[k-1]*int(line.split(": ")[1])/maxFirstCount)#Looks through the article and looks through each bias document, if it finds it add it to the weight                                                    
             weights[i] = weights[i]/dataLen
     if((weights.index(max(weights)))+1==df.iat[rowNumber,3]):
         success+=1
